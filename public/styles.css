@@ -1,0 +1,209 @@
+/*
+Carlos Rios
+07/07/2024
+style.css
+*/
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+.Start {
+    background-color: transparent;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 70vw;
+    height: 70vh;
+}
+
+.shell {
+    display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow-x: auto;
+    text-align: center;
+    width: auto;
+	margin: auto;
+}
+
+.Title {
+    display: flex;
+	justify-content: center;
+	align-items: center;
+    text-align: center;
+	font-size: 5vw;
+    font-family: "Comic Sans MS";
+    color: white;
+	width: auto;
+	margin: 6% auto;
+	padding: 2%;
+	border: none;
+	border-radius: 5px;
+}
+
+.Instructions {
+    background-color: white;
+    display: none;
+	justify-content: center;
+	align-items: center;
+    text-align: center;
+	font-size: 1.6vw;
+    color: black;
+	width: auto;
+	margin: 6% auto;
+	padding: 2%;
+	border: none;
+	border-radius: 5px;
+	font-family: "Comic Sans MS";
+}
+
+.fScore {
+    background-color: white;
+    display: none;
+	justify-content: center;
+	align-items: center;
+    text-align: center;
+	font-size: 2vw;
+    color: black;
+	width: auto;
+	margin: 2% auto;
+	padding: 2%;
+	border: none;
+	border-radius: 5px;
+	font-family: "Comic Sans MS";
+}
+
+
+.Submit {
+    display: flex;
+	justify-content: center;
+	align-items: center;
+    color: black;
+    background-color: white;
+	font-size: 2vw;
+	width: auto;
+	margin: 3% auto;
+	padding: 2%;
+	border: none;
+	border-radius: 20px;
+	font-family: "Comic Sans MS";
+}
+
+.Submit:hover, .Submit2:hover, .Submit3:hover {
+	font-weight: bold;
+}
+
+.Submit2 {
+    display: none;
+	justify-content: center;
+	align-items: center;
+    color: black;
+    background-color: white;
+	font-size: 2vw;
+	width: auto;
+	margin: 3% auto;
+	padding: 2%;
+	border: none;
+	border-radius: 20px;
+	font-family: "Comic Sans MS";
+}
+
+.Etable {
+	border-collapse: collapse;
+	border: 5px solid;
+	box-shadow: 0 0 1em rgba(0, 0, 0, 0.2);
+	width: auto;
+	font-size: 1.8em;
+}
+
+input {
+    display: none;
+    padding: 20px;
+    font-size: 2vw;
+    border-radius: 20px;
+    border: none;
+}
+
+/*
+.Score {
+    display: flex;
+	justify-content: center;
+	align-items: center;
+    text-align: center;
+	font-size: 5vw;
+    font-family: "Comic Sans MS";
+    color: black;
+	width: auto;
+	margin: 3% auto;
+	border: none;
+	border-radius: 5px;
+	font-family: "Comic Sans MS";
+}
+*/
+
+.Submit3 {
+    display: flex;
+	justify-content: center;
+	align-items: center;
+    color: black;
+    background-color: white;
+	font-size: 2vw;
+	width: auto;
+	margin: 3% auto;
+	padding: 2%;
+	border: none;
+	border-radius: 20px;
+	font-family: "Comic Sans MS";
+}
+
+.button-wrapper {
+	display: none;
+	background-color: white;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+	vertical-align: center;
+	width: 50vw;
+    height: 15vh;
+	margin: 6% auto;
+	border: none;
+	border-radius: 20px;
+	overflow: hidden;
+}
+
+mark.red {
+	color: red;
+	background: none;
+}
+
+mark.blue {
+	color: blue;
+	background: none;
+}
+
+mark.green {
+	color: green;
+	background: none;
+}
+
+h1 {
+	position:relative;
+  }
+  
+  h1 span {
+	position:absolute;
+	text-align: center;
+	bottom:0;
+  }
+
+canvas {
+    display: block;
+}

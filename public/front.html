@@ -1,0 +1,76 @@
+<!Doctype html>
+<!--
+    Author: Carlos Rios
+    Date: 05/19/24
+
+    Filename: front.html
+-->
+<html>
+    <head>
+        <meta charset="utf-8">        
+        <meta name="viewport" content="width = device-width, initial-scale = 1">
+        <title>My Asteroids Game</title>
+        <link rel="stylesheet" href="styles.css">
+        <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+        <script src="/js/classes.js"></script>
+        <script src="/js/functions.js"></script>
+        <script src="/js/game.js"></script>
+    </head>
+
+    <!--July 7th-->
+    <div class="Start">
+        <div class="shell">
+            <div>
+                <table class="Etable">
+                    <tr>
+                        <h1 class="Title" name="title" >Space Battle</h1>
+                    </tr>
+                    <tr>
+                        <button class="Submit" name="main" onclick="begin()">Start Game</button>
+                    </tr>
+                    <tr>
+                        <button class="Submit" name="main" onclick="how()">How To Play</button>
+                    </tr>
+                    <tr>
+                        <button class="Submit" name="main">Achievements</button>
+                    </tr>
+                    <tr>
+                        <h1 class="Instructions" name="instructions">
+                            Forward: Up arrow or 'W' key<br>
+                            Turn left: Left arrow or 'A' key<br>
+                            Turn right: Right arrow or 'D' key<br><br>
+                            <span><mark class="red">Dodge, </mark><mark class="blue">shoot enemies, </mark><mark class="green" >and have fun!</mark>
+                            </span>
+                        </h1>
+                    </tr>
+                    <tr>
+                        <button class="Submit2" name="instructions" onclick="home1()">Home</button>
+                    </tr>
+                    <tr>
+                        <form id="nameForm">
+                            <div class="shell">
+                                <input type="text" placeholder="Username" autocapitalize="on" autocomplete="on" 
+                                pattern=".{1,}" required title="1 character minimum" minlength="1" maxlength="10" 
+                                id="nameInput" name="name"/>
+                            </div>
+                            <div>
+                                <button class="Submit2" name="name">Start</button>
+                            </div>
+                        </form>
+                    </tr>
+                    <tr>
+                        <h1 class="fScore" name="startOver1" id="sDisplay">0</h1>
+                    </tr>
+                    <tr>
+                        <button class="Submit2" name="startOver2" onclick="tryAgain()">Game Over</button>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <body>
+        <canvas id='canvas' width="100" height="100"></canvas>  
+    </body>
+
+</html>
