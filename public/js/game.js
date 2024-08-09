@@ -3,11 +3,8 @@
 
       Filename: game.js
 */
-//function createShip(){
-    //ships.push(new Ship());
-//}
 
-// Hosts the game logic and continously displays all of the game's elements
+// Continously displays all of the game's elements
 function Generate(){
     setInterval(() =>{
         // Creates the background for the game
@@ -17,8 +14,7 @@ function Generate(){
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draws ship objects as long as there is an object in the ships array
-        //Added. Currently work with the if condition. Previously was shaking the other ship
+        // Implements player prediction on the client-side and draws all ships in the players array
         for (const id in players){
             if (id == socket.id){
             players[id].update();
@@ -27,8 +23,7 @@ function Generate(){
         }
 
         
-        // Draws asteroid objects as long as there is an object in the asteroids
-        // array
+        // Draws enemy objects as long as there are objects in the enemy arrays
         if (Object.keys(asteroids).length > 0){
             for (const id in asteroids){
                 asteroids[id].draw();
@@ -41,13 +36,11 @@ function Generate(){
             }
         }
 
-        // Adds a bullet to the bullets array when ' ' is pushed and at a set rate
-        //if (keys[' ']){
-            //rate += 1;
-            //if (rate % 10 == 0)
-                //bullets.push(new Bullet(Object.values(players)[0].angle)); 
-        //}
-
+        if (Object.keys(crystals).length > 0){
+            for (const id in crystals){
+                crystals[id].draw();
+            }
+        }
         
         // Draws bullet objects as long as their is an object in the bullets array
         if (Object.keys(bullets).length > 0){
@@ -56,101 +49,22 @@ function Generate(){
             }
         }
 
-        /*
-        // Will test for ship-asteroid collisions as long as there is asteroid
-        // objects
-        if (asteroids.length != 0) {
-            // Collisions will only occur if the ship is vulnerable
-            if (ships[0].vulnerable){
-                for(let a = 0; a < asteroids.length; a++){
-                    // Resets ship to original position upon collision
-                    if(Collision(ships[0].xpos, ships[0].ypos, ships[0].radius, 
-                        asteroids[a].xpos, asteroids[a].ypos, asteroids[a].radius)){
-                            ships[0].xpos = canvasWidth/2;
-                            ships[0].ypos = canvasHeight/2;
-                            ships[0].xspeed = 0;
-                            ships[0].yspeed = 0;
-                            lives[0] -= 1;
-                    }
-                }
-            }
-        }
-
-        // Will test for bullet-asteroid collisions while there are bullet and 
-        // asteroid objects
-        if (asteroids.length != 0 && bullets.length != 0) {
-            for (let a = 0; a < asteroids.length; a++){
-                for(let b = 0; b < bullets.length; b++){
-                    // Upon collision adjusts the dimensions of the asteroid and
-                    // marks the bullet object for removal
-                    if(Collision(asteroids[a].xpos, asteroids[a].ypos, asteroids[a].radius, 
-                        bullets[b].xpos, bullets[b].ypos, bullets[b].radius)){
-                        asteroids[a].radius -= 5;
-                        bullets[b].remove = true;
-                        // Adds two new asteroid objects after a certain size, 
-                        // adds to score, and marks previous asteroid for removal.
-                        if(asteroids[a].radius == 45){
-                            asteroids.push(new Asteroid(35,35,35, asteroids[a].xpos, asteroids[a].ypos));
-                            asteroids.push(new Asteroid(35,35,35, asteroids[a].xpos, asteroids[a].ypos));
-                            score += 40;
-                            asteroids[a].remove = true;
-                        }
-                        // Adds to score and marks asteroid for removal
-                        else if (asteroids[a].radius == 25){
-                            score += 20;
-                            asteroids[a].remove = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Removes asteroids that have been marked for removal
-        for (let a = 0; a < asteroids.length; a++){
-            if (asteroids[a].remove){
-                asteroids.splice(a,1);
-            }
-        }
-
-        // Removes bullets that have been marked for removal
-        for (let b = 0; b < bullets.length; b++){
-            if (bullets[b].remove){
-                bullets.splice(b,1);
-            }
-        }
-
-        // Adjusts level and adds more asteroids
-        if (asteroids.length == 0){
-            level += 1;
-            let multi = 2 * level;
-            for (let b = 0; b < multi; b++){
-                asteroids.push(new Asteroid(55,55,55));
-            }
-        }
-
-        saveHighScore(score);
-
-        console.log('The high score is: ', highScore);
-
-        // Displays all relevant information
-        
-        highScoreDisplay();
-
-        */
         ScoreDisplay();
         LevelDisplay();
         Lives();
         highScoreDisplay();
 
         star();
+        saveAchievements();
+        setEnemies();
    
     }, 15)
 }
 
-
+// Creates an event listener that sets the canvas element as soon as the page loads
 document.addEventListener('DOMContentLoaded', SetCanvas);
 
-// Sets canvas, player ship, and event listeners
+// Add additional event listeners and serves as the function that initiates the game
 function SetCanvas(){
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
@@ -160,6 +74,7 @@ function SetCanvas(){
     document.body.addEventListener('keyup', keyUp);
     document.querySelector("#nameForm").addEventListener('submit', submit);
 
+    // A function that attempts to reset the dimensions of the canvas as the window screen changes size
     function resizeCanvas(){
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;

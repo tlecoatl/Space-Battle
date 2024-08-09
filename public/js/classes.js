@@ -3,6 +3,7 @@ let ctx;
 let canvasWidth = window.innerWidth;
 let canvasHeight = window.innerHeight;
 
+// Serves as the player avatar and stores information necessary for the game
 class Ship {
     constructor({xpos, ypos, color, vulnerable, name}) {
         this.xpos = xpos || canvasWidth/2;
@@ -72,7 +73,8 @@ class Ship {
 
     // Orients the ship and then draws the ship based on the given dimensions
     draw() {
-        //I don't how I Magavired this but it helps create a pulsing effect when invulnerable
+        // In conjunction with the blur property, creates a strobing effect that indicates invulnerability by 
+        //changing the values for the ship's opacity and shadow.
         if(!this.vulnerable){
             if(this.counter <= 25 & this.counter2 == 0){
                 this.counter++;
@@ -101,8 +103,7 @@ class Ship {
             this.opacity = 1;
         }
 
-        //Gave up trying to add conditions to the above conditional statements. Added this to account for negative numbers.
-        //If problems persist or cause additional difficulties I will have to remove the line here.
+        //Added this to account for negative numbers.
         if (this.blur < 0){
             this.blur = 0;
         }
@@ -110,10 +111,12 @@ class Ship {
 
         ctx.save();
 
+        // Orients the ship into the appropriate position
         ctx.translate(this.xpos, this.ypos);
         ctx.rotate(this.angle - 1.575);
         ctx.translate(-this.xpos, -this.ypos);
 
+        // Adds the player's color and the player's name to the ship
         ctx.fillStyle = this.color;
         ctx.textAlign = 'center';
         ctx.font = "bold 20px Arial";
@@ -122,6 +125,8 @@ class Ship {
         ctx.restore();
         ctx.save();
 
+        // Draws the ship with its new coordinates and orientation. Also includes properties to create strobing
+        // effect.
         ctx.translate(this.xpos, this.ypos);
         ctx.rotate(this.angle);
         ctx.translate(-this.xpos, -this.ypos);
@@ -141,10 +146,10 @@ class Ship {
     }
 }
 
+// The projectile object fired by the player. Also keeps track of which player fired it
 class Bullet {
     constructor({xpos, ypos, width, height, color}) {
         this.angle;
-        // Combines the ship's angle and coordinates to place the bullet
         this.xpos = xpos;
         this.ypos = ypos;
         this.speed = 2;
@@ -156,17 +161,14 @@ class Bullet {
         this.player;
     }
 
-    // Updates the bullet's position and establishes a bullet's 'life span'
-    update(){
-    }
-
-    // Draws the bullet
+    // Draws the bullet object
     draw() {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.xpos, this.ypos, this.width, this.height);
     }
 }
 
+// The primary enemy object that includes important information for spawing the object on the canvas element
 class Asteroid {
     constructor({width, height, radius, xpos, ypos,}) {
         // Places the asteroid in a random location or is given coordinates
@@ -183,7 +185,7 @@ class Asteroid {
         this.remove = false;
     }
 
-    // Updates the asteroid's position and keeps the asteroid on the screen
+    // Updates the asteroid's position and keeps the asteroid on the screen. Not currently in use.
     update(){
         this.xpos -= this.xspeed;
         this.ypos -= this.yspeed;
@@ -205,60 +207,131 @@ class Asteroid {
         }
     }
 
-    // Draws the asteroid
+    // Draws the asteroid object
     draw() {
         ctx.strokeStyle = this.color;
         ctx.lineWidth = 8;
         ctx.beginPath();
         ctx.arc(this.xpos, this.ypos, this.radius, 0, 2 * Math.PI);
+        ctx.fillStyle = "brown";
+        ctx.fill();
         ctx.stroke();
     }
 }
 
+// Draws the secondary enemy, the rock object
 class Rock {
-    constructor({width, height, radius, xpos, ypos, color}) {
-        // Places the asteroid in a random location or is given coordinates
+    constructor({radius, xpos, ypos, length}) {
+        // Places the rock in a random location or is given coordinates
         this.xpos = xpos || Math.floor(Math.random() * canvasWidth);
         this.ypos = ypos || Math.floor(Math.random() * canvasHeight);
-        // Gives the asteroid a random orientation
-        this.angle = Math.random()*Math.PI*2;
-        this.xspeed = Math.cos(this.angle) * 2;
-        this.yspeed = Math.sin(this.angle) * 2;
-        this.width = width;
-        this.height = height;
         this.radius = radius;
-        this.color = color;
-        this.remove = false;
+        this.length = length;
+        this.colors = ['#E3170D','#9D1309','#F22C1E']
     }
 
-    // Updates the asteroid's position and keeps the asteroid on the screen
-    update(){
-        this.xpos -= this.xspeed;
-        this.ypos -= this.yspeed;
-
-        if (this.radius > this.xpos){
-            this.xpos = canvasWidth - this.radius;
-        }
-
-        if (this.xpos > canvasWidth){
-            this.xpos = this.radius;
-        }
-
-        if (this.radius > this.ypos){
-            this.ypos = canvasHeight - this.radius;
-        }
-
-        if (this.ypos > canvasHeight){
-            this.ypos = this.radius;
-        }
-    }
-
-    // Draws the asteroid
+    // Draws the rock
     draw() {
-        ctx.strokeStyle = this.color;
-        ctx.lineWidth = 8;
+        ctx.save();
+
+        // Orients the rock into the appropriate position
+        ctx.translate(this.xpos, this.ypos);
+        ctx.rotate(.785);
+        ctx.translate(-this.xpos, -this.ypos);
+
+        ctx.fillStyle=this.colors[0];
         ctx.beginPath();
-        ctx.arc(this.xpos, this.ypos, this.radius, 0, 2 * Math.PI);
-        ctx.stroke();
+        ctx.moveTo(this.xpos,this.ypos);
+        ctx.lineTo(this.xpos+this.length/2,this.ypos+0.7*this.length);
+        ctx.lineTo(this.xpos+this.length/2,this.ypos);
+        ctx.fill();
+        
+        ctx.fillStyle=this.colors[1];
+        ctx.beginPath();
+        ctx.moveTo(this.xpos+this.length/2, this.ypos);
+        ctx.lineTo(this.xpos+this.length/2,this.ypos+0.7*this.length);
+        ctx.lineTo(this.xpos+this.length,this.ypos);
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.moveTo(this.xpos+this.length/4,this.ypos-0.3*this.length);
+        ctx.lineTo(this.xpos,this.ypos);
+        ctx.lineTo(this.xpos+this.length/2,this.ypos);
+        ctx.fill();
+        
+        ctx.fillStyle=this.colors[2];
+        ctx.beginPath();
+        ctx.moveTo(this.xpos+this.length/4,this.ypos-0.3*this.length);
+        ctx.lineTo(this.xpos+this.length/2,this.ypos);
+        ctx.lineTo(this.xpos+0.75*this.length,this.ypos-0.3*this.length);
+        ctx.fill();
+        
+        ctx.fillStyle=this.colors[0];
+        ctx.beginPath();
+        ctx.moveTo(this.xpos+0.75*this.length,this.ypos-0.3*this.length);
+        ctx.lineTo(this.xpos+this.length/2,this.ypos);
+        ctx.lineTo(this.xpos+this.length,this.ypos);
+        ctx.fill();
+
+        ctx.restore();
+    }
+}
+
+// Draws the secondary enemy, the crystal object
+class Crystal {
+    constructor({radius, xpos, ypos, length, angle}) {
+        // Places the crystal in a random location or is given coordinates
+        this.xpos = xpos || Math.floor(Math.random() * canvasWidth);
+        this.ypos = ypos || Math.floor(Math.random() * canvasHeight);
+        this.radius = radius;
+        this.length = length;
+        this.angle = angle;
+        this.radian = 0;
+    }
+
+    // Draws the crystal
+    draw() {
+        this.radian += this.angle;
+
+        ctx.save();
+        ctx.translate(this.xpos, this.ypos);
+        ctx.rotate(this.radian);
+        ctx.translate(-this.xpos, -this.ypos);
+
+        ctx.fillStyle='cyan';
+        ctx.beginPath();
+        ctx.moveTo(this.xpos,this.ypos-this.length);
+        ctx.lineTo(this.xpos-this.length,this.ypos);
+        ctx.lineTo(this.xpos,this.ypos);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle='blue';
+        ctx.beginPath();
+        ctx.moveTo(this.xpos,this.ypos+this.length);
+        ctx.lineTo(this.xpos-this.length,this.ypos);
+        ctx.lineTo(this.xpos,this.ypos);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle='blue';
+        ctx.beginPath();
+        ctx.moveTo(this.xpos,this.ypos-this.length);
+        ctx.lineTo(this.xpos+this.length,this.ypos);
+        ctx.lineTo(this.xpos,this.ypos);
+        ctx.fill();
+        ctx.closePath();
+        
+        ctx.fillStyle='cyan';
+        ctx.beginPath();
+        ctx.moveTo(this.xpos,this.ypos+this.length);
+        ctx.lineTo(this.xpos+this.length,this.ypos);
+        ctx.lineTo(this.xpos,this.ypos);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.restore();
+
+
     }
 }

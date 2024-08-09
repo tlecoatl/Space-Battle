@@ -1,8 +1,11 @@
-let keys = {};
+let keys = {ArrowLeft: false, ArrowUp: false, ArrowRight: false, a: false, w: false, d: false,
+           " ": false};
 let bullets = {};
 const asteroids = {};
 const rocks = {};
+const crystals = {};
 let highScore;
+let highLevel;
 let rate = 0;
 let ship;
 const stars = {};
@@ -13,7 +16,22 @@ const names = document.getElementsByName("name");
 const title = document.getElementsByName("title");
 const newGame1 = document.getElementsByName("startOver1");
 const newGame2 = document.getElementsByName("startOver2");
+const records = document.getElementsByName('records');
+const hiScore = document.getElementsByName('hiScore');
+const hiLevel = document.getElementsByName('hiLevel');
+const enemies = document.getElementsByName('enemies');
+const list = document.getElementsByTagName('list');
+const eList = document.getElementById('eList');
+let enemyA = false;
+let enemyR = false;
+let enemyC = false;
 
+let currentHighScore = localStorage.getItem('highScore');
+let currentHighLevel = localStorage.getItem('highLevel');
+let enemiesCollection = localStorage.getItem('allEnemies')
+let trigger = false;
+
+// Creates an array of 450 'dots' with with random coordinates and radi. Used to create the star background.
 for (let s = 0; s <= 450; s++){
     stars[s] ={
         randomX: Math.floor(Math.random() * 3000) + 1,
@@ -24,21 +42,22 @@ for (let s = 0; s <= 450; s++){
     }
 }
 
-//Added
+// Client Initialization from the same domain
 const socket = io();
 
-//Listens for the 'screen' event and sends over an object containing the browser window's dimensions
+// Listens for the 'screen' event and sends over an object containing the browser window's dimensions
 socket.on('screen', () => {
     let dimensions = {playerWidth: canvasWidth, playerHeight: canvasHeight}
     socket.emit('canvas', dimensions);
 })
 
-//Listens for the 'players' event and sends over a list of updated players. Creates a new player and adds it to the front end
-//player list, updates player properties, and deletes player that is no longer in the backend.
+// Listens for the 'players' event and sends over a list of updated players. Creates a new player and adds it to 
+// the front end player list, updates player properties, and deletes player that is no longer in the backend.
 socket.on('players', (serverPlayers) => {
     for (const id in serverPlayers) {
         const serverPlayer = serverPlayers[id];
 
+        //Creates a new ship if the the player id is new. Otherwise updates the existing players information.
         if (!players[id]){
             players[id] = new Ship({
                xpos: serverPlayer.xpos,
@@ -59,15 +78,35 @@ socket.on('players', (serverPlayers) => {
             players[id].vulnerable = serverPlayer.vulnerable;
         }
     }
-    //Keeps the players synced in the front and backends. Displays a game over screen for any player that dies after losing all their lives 
+    // Keeps the players synced in the front and backends. Displays a game over screen for any player that dies 
+    // after losing all their lives. Updates player score and level in the achievements section
     for (const id in players) {
         if(!serverPlayers[id]){
             for(let g = 0; g < newGame1.length; g++){
+                // before player deletion, the player's score is saved and the game over screen is displayed
                 if (id == socket.id){
                     string = "Final Score: " + players[id].score.toString();
                     newGame1[g].innerHTML = string;
                     newGame1[g].style.display = 'flex';
                     newGame2[g].style.display = 'flex';
+
+                    // Ensures that player's have an appropriate value for their locally saved score and level
+                    // Uses this saved value to then update the values displayed in the achievements section
+                    if (currentHighScore == null || players[id].score > currentHighScore){
+                        localStorage.setItem('highScore', players[id].score);
+                    }
+        
+                    if (currentHighLevel == null || players[id].level > currentHighLevel){
+                        localStorage.setItem('highLevel', players[id].level)
+                    }
+        
+                    let trueScore = localStorage.getItem('highScore');
+                    let trueLevel = localStorage.getItem('highLevel');
+        
+                    let stringScore = " Hi-Score: " + trueScore.toString();
+                    hiScore[0].innerHTML = stringScore;
+                    let stringLevel = " Highest Level: " + trueLevel.toString();
+                    hiLevel[0].innerHTML = stringLevel;
                 }
             }
 
@@ -76,6 +115,7 @@ socket.on('players', (serverPlayers) => {
     }
 })
 
+// Keeps the bullets in the front and backend synced. Deletes any bullet object that no longer exists in the backend
 socket.on('bullets', (serverBullets) => {
     for (const id in serverBullets) {
         const serverBullet = serverBullets[id];
@@ -104,6 +144,8 @@ socket.on('bullets', (serverBullets) => {
     }
 })
 
+// Keeps the asteroids in the front and backend synced. Deletes any asteroid object that no longer exists in the 
+// backend
 socket.on('asteroids', (serverAsteroids) => {
     for (const id in serverAsteroids) {
         const serverAsteroid = serverAsteroids[id];
@@ -140,16 +182,13 @@ socket.on('rocks', (serverRocks) => {
             rocks[ab] = new Rock({
                 xpos: serverRock.xpos,
                 ypos: serverRock.ypos,
-                width: serverRock.width,
-                height: serverRock.height,
                 radius: serverRock.radius,
-                color: serverRock.color
+                length: serverRock.length
             })
         } else {
             rocks[ab].xpos = serverRock.xpos
             rocks[ab].ypos = serverRock.ypos;
-            rocks[ab].width = serverRock.width;
-            rocks[ab].height = serverRock.height;
+            rocks[ab].length = serverRock.length;
             rocks[ab].radius = serverRock.radius;
         }
     }
@@ -161,7 +200,34 @@ socket.on('rocks', (serverRocks) => {
     }
 })
 
-// Displays the current score
+socket.on('crystals', (serverCrystals) => {
+    for (const ac in serverCrystals) {
+        const serverCrystal = serverCrystals[ac];
+
+        if (!crystals[ac]){
+            crystals[ac] = new Crystal({
+                xpos: serverCrystal.xpos,
+                ypos: serverCrystal.ypos,
+                radius: serverCrystal.radius,
+                length: serverCrystal.length,
+                angle: serverCrystal.angle
+            })
+        } else {
+            crystals[ac].xpos = serverCrystal.xpos
+            crystals[ac].ypos = serverCrystal.ypos;
+            crystals[ac].length = serverCrystal.length;
+            crystals[ac].radius = serverCrystal.radius;
+        }
+    }
+
+    for (const id in crystals) {
+        if(!serverCrystals[id]){
+            delete crystals[id];
+        }
+    }
+})
+
+// Displays the current score player score and repositions it as necessary
 function ScoreDisplay (){
     let score = 0;
     let color = 'white';
@@ -192,11 +258,12 @@ function ScoreDisplay (){
     }
 }
 
-// Displays the current score WORK IN PROGRESS
+// Displays the score and name of the three highest scoring players to all other players
 function highScoreDisplay (){
     let top3 = [];
     let fontSize = 40;
 
+    // Stores information on all players in objects and then places those objects in an array
     for (let rr in players){
         let power = new Object();
 
@@ -208,11 +275,14 @@ function highScoreDisplay (){
         top3.push(power);
     }
 
+    // Sorts objects in array by highest score
     top3.sort(({score:a}, {score:b}) => b-a);
 
     let xshift = 120;
     let yshift = 160;
     let name = '';
+    
+    // Is used to find the player with the longest name 
     for (let t = 0; t < top3.length; t++){
         let newName = name;
         name = top3[t].name;
@@ -222,6 +292,7 @@ function highScoreDisplay (){
         }
     }
 
+    // Shifts the position of the display by adding additional space for every character in the longest name
     if (name.length >= 1){
         xshift += (14 * name.length);
     }
@@ -229,6 +300,8 @@ function highScoreDisplay (){
     let xpoint = canvasWidth - xshift;
     let ypoint = canvasHeight - yshift;
 
+    // Shifts the position of the display by adding additional space once the length of the highest reaches a 
+    // certain threshold
     if (top3.length >= 1){
         if (top3[0].score >= 9999 & xshift === 285){
             xpoint -= 40;
@@ -245,6 +318,7 @@ function highScoreDisplay (){
         }
     }
     
+    // Places each player name and score in the appropriate location. Also adjusts font size accordingly. 
     for (let dd in players){
         if (dd === socket.id){
             if (top3.length === 1){
@@ -302,7 +376,7 @@ function highScoreDisplay (){
     }
 }
 
-// Displays the current level
+// Displays the player's current level on their screen
 function LevelDisplay (){
     let level = 0;
     let color = 'white';
@@ -358,17 +432,94 @@ function Lives (){
     } 
 }
 
-// Retrieves high score value from local storage and determines new high score
-function saveHighScore(score) {
-   const currentHighScore = localStorage.getItem('highScore');
+// Identifies the type of enemy and updates the "Enemies" in the achievement section
+function setEnemies(){
+    let allEnemies = "";
+    let enemyNames = ["Asteroid", "Rock", "Crystal"];
+    let enemyAppear = [];
 
-    if (currentHighScore == null || score > currentHighScore){
-        localStorage.setItem('highScore', score);
-        highScore = score;
-    } else {
-        highScore = currentHighScore;
+    // Checks to see if enemy objects exist 
+    if (Object.keys(asteroids).length != 0){
+        enemyAppear.push(true);
+    }
+
+    if (Object.keys(rocks).length != 0){
+        enemyAppear.push(true);
+    }
+
+    if (Object.keys(crystals).length !=0){
+        enemyAppear.push(true);
+    }
+
+    // Makes sure that the local storage variable has a type string for its value
+    if (enemiesCollection === null){
+        localStorage.setItem("allEnemies", allEnemies);
+    }
+
+    // Converts the value located in the local storage into a accessible string 
+    let trueEnemies = localStorage.getItem('allEnemies');
+
+    // Verifies an enemy encounter and adds enemy to enemy list if the ecounter is new
+    for (let n = 0; n < enemyNames.length; n++){
+        if (!trueEnemies.includes(enemyNames[n])){
+            if (enemyAppear[n]){
+                allEnemies += enemyNames[n]
+                localStorage.setItem("allEnemies", allEnemies);
+                trueEnemies = localStorage.getItem("allEnemies");
+            }
+        }
+    }
+
+    // Sets the names of the enemy objects in the Enemies segment of the Achievements section
+    if (trueEnemies.includes("Asteroid") & enemyA === false){
+        enemyA = true;
+        let newSpan = document.createElement('span');
+        newSpan.textContent = 'Asteroids';
+        newSpan.classList.add('info1');
+        let bar = document.createElement('br');
+        newSpan.appendChild(bar);
+        eList.appendChild(newSpan);
+    }
+
+    if (trueEnemies.includes("Rock") & enemyR === false){
+        enemyR = true;
+        let newSpan = document.createElement('span');
+        newSpan.textContent = 'Rocks';
+        newSpan.classList.add('info2');
+        let bar = document.createElement('br');
+        newSpan.appendChild(bar);
+        eList.appendChild(newSpan);
+    }
+
+    if (trueEnemies.includes("Crystal") & enemyC === false){
+        enemyC = true;
+        let newSpan = document.createElement('span');
+        newSpan.textContent = 'Crystals';
+        newSpan.classList.add('info3');
+        let bar = document.createElement('br');
+        newSpan.appendChild(bar);
+        eList.appendChild(newSpan);
     }
 }
+
+// Retrieves the player high score and level and displays them in the achievement section
+function saveAchievements() {    
+    if (currentHighScore == null){
+        localStorage.setItem('highScore', '0');
+    }
+
+    if (currentHighLevel == null){
+        localStorage.setItem('highLevel', '0')
+    }
+
+    let trueScore = localStorage.getItem('highScore');
+    let trueLevel = localStorage.getItem('highLevel');
+
+    let stringScore = " Hi-Score: " + trueScore.toString();
+    hiScore[0].innerHTML = stringScore;
+    let stringLevel = " Highest Level: " + trueLevel.toString();
+    hiLevel[0].innerHTML = stringLevel;
+ }
 
 // Determines if two objects have collided based on their position and radius
 function Collision(x1, y1, r1, x2, y2, r2){
@@ -384,39 +535,34 @@ function Collision(x1, y1, r1, x2, y2, r2){
     }
 }
 
-// Registers key strokes for the game
+// Registers key strokes for the game and transmits them to the backend as an object
 function keyDown(e){
-    //Preventative measure to stop undefined key error on server side
-    for (n = 0; n < names.length; n++){
-        if (names[n].style.display === 'none'){
+    // Preventative measure to stop undefined key error on server 
+        if (trigger === true){
             e.preventDefault();
+            if (e.repeat) {return};
 
-            keys[e.key] = true
-            console.log(keys);
+            keys[e.key] = true;
     
             if (players[socket.id]){
                 socket.emit('keydown', keys);
             }
         }
-    }
-    for (n = 0; n < names.length; n++){
-        if (names[n].style.display === 'flex'){
-            keys[e.key] = true
+
+        if (trigger === false){
+            if (e.repeat) {return};
+            keys[e.key] = true;
     
             if (players[socket.id]){
                 socket.emit('keydown', keys);
             }
         }
-    }
-
-    //keys[e.key] = true
-    
-    //if (players[socket.id]){
-        //socket.emit('keydown', keys);
-    //}
 }
 
+// Detects key up event and transmits new keystroke object to the backend
 function keyUp(e){
+    e.preventDefault();
+    if (e.repeat) {return};
     keys[e.key] = false;
 
     if (players[socket.id]){
@@ -424,6 +570,7 @@ function keyUp(e){
     }
 }
 
+// Takes the dot array created before and uses it generate a starry background upon the canvas
 function star(){
     for(const id in stars){
         const s = stars[id];
@@ -436,6 +583,7 @@ function star(){
     }
 }
 
+// Rearranges the start screen to display the instruction section 
 function how() {
     for(h = 0; h < main.length; h++){
         main[h].style.display = 'none';
@@ -446,6 +594,18 @@ function how() {
     }
 }
 
+// Rearranges the start screen to display the achievement section
+function record() {
+    for(h = 0; h < main.length; h++){
+        main[h].style.display = 'none';
+    }
+
+    for(i = 0; i < records.length; i++){
+        records[i].style.display = 'flex';
+    }
+}
+
+// Rearranges the start screen to hide the instruction section and display the starting screen
 function home1() {
     for(let h = 0; h < main.length; h++){
         main[h].style.display = 'flex';
@@ -457,7 +617,21 @@ function home1() {
 
 }
 
+// Rearranges the start screen to hide the achievements section and display the starting screen
+function home2() {
+    for(let h = 0; h < main.length; h++){
+        main[h].style.display = 'flex';
+    }
+
+    for(let i = 0; i < records.length; i++){
+        records[i].style.display = 'none';
+    }
+
+}
+
+// Displays the title and start screen after hiding the elements of the game over section
 function tryAgain() {
+    trigger = false;
     for(let h = 0; h < newGame1.length; h++){
         newGame1[h].style.display = 'none';
     }
@@ -476,6 +650,7 @@ function tryAgain() {
 
 }
 
+// Rearranges the start screen section to display the naming section
 function begin() {
     for(h = 0; h < main.length; h++){
         main[h].style.display = 'none';
@@ -486,9 +661,12 @@ function begin() {
     }
 }
 
+// Alters the value of the trigger variable to alter the keydown event listener, transmits the name to the backend,
+// and hides all screen elements to display the game to the player
 function submit(e) {
     e.preventDefault();
     let userNames = document.querySelector('#nameInput').value;
+    trigger = true;
 
     socket.emit('start', userNames);
 

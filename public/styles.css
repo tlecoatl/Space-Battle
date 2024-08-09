@@ -13,6 +13,7 @@ html, body {
     height: 100%;
 }
 
+/* The div element that houses all other elements and orients them appropriately*/
 .Start {
     background-color: transparent;
     position: fixed;
@@ -24,6 +25,7 @@ html, body {
     height: 70vh;
 }
 
+/* Centers the etable element in the middle of the screen*/
 .shell {
     display: flex;
 	justify-content: center;
@@ -34,6 +36,7 @@ html, body {
 	margin: auto;
 }
 
+/* The style for the "Space Battle" title*/
 .Title {
     display: flex;
 	justify-content: center;
@@ -49,6 +52,7 @@ html, body {
 	border-radius: 5px;
 }
 
+/* The style for the ahievement section*/
 .Instructions {
     background-color: white;
     display: none;
@@ -59,12 +63,12 @@ html, body {
     color: black;
 	width: auto;
 	margin: 6% auto;
-	padding: 2%;
 	border: none;
 	border-radius: 5px;
 	font-family: "Comic Sans MS";
 }
 
+/* The style for the score that is displayed in the game over section*/
 .fScore {
     background-color: white;
     display: none;
@@ -81,7 +85,7 @@ html, body {
 	font-family: "Comic Sans MS";
 }
 
-
+/* Styling for some of the buttons used in the menu system*/
 .Submit {
     display: flex;
 	justify-content: center;
@@ -97,10 +101,12 @@ html, body {
 	font-family: "Comic Sans MS";
 }
 
+/* The hover effect for all buttons in the game*/
 .Submit:hover, .Submit2:hover, .Submit3:hover {
 	font-weight: bold;
 }
 
+/* Styling for some of the buttons used in the menu system*/
 .Submit2 {
     display: none;
 	justify-content: center;
@@ -116,6 +122,7 @@ html, body {
 	font-family: "Comic Sans MS";
 }
 
+/* The table element that helps structure the entire menu system*/
 .Etable {
 	border-collapse: collapse;
 	border: 5px solid;
@@ -124,6 +131,7 @@ html, body {
 	font-size: 1.8em;
 }
 
+/* Styles the input element for the player name*/
 input {
     display: none;
     padding: 20px;
@@ -132,25 +140,131 @@ input {
     border: none;
 }
 
-/*
-.Score {
-    display: flex;
+/* Styling for the div element that displays the player's highest score and level*/
+.Flex1 {
+	display:none;
+	font-size: 2vw;
+	background-color: white;
 	justify-content: center;
 	align-items: center;
     text-align: center;
-	font-size: 5vw;
+	width: auto;
+	border-top: solid gold 5px;
+	border-right: solid gold 5px;
+	border-left: solid gold 5px;
+	border-radius: 5px 5px 0px 0px;
+	padding: auto;
+	font-family: "Comic Sans MS";
+}
+
+/* Styling for the div element that holds the elements related to enemies in the achievement section*/
+.Flex3 {
+	display:none;
+	position:relative;
+	font-size: 2vw;
+	font-family: "Comic Sans MS";
+	background-color: white;
+	justify-content: center;
+	align-items: center;
+    text-align: center;
+	overflow-x: auto;
+	width: auto;
+	border: solid gold 5px;
+	border-radius: 0px 0px 5px 5px;
+	padding-bottom: 12vw;
+}
+
+/* Styling for the div element that holds the elements related to instructions in the "How to Play"
+   section
+*/
+.Flex6 {
+	display:none;
+	position:relative;
+	font-size: 2vw;
+	font-family: "Comic Sans MS";
+	background-color: white;
+	justify-content: center;
+	align-items: center;
+    text-align: center;
+	overflow-x: auto;
+	width: auto;
+	border: solid gold 5px;
+	border-radius: 0px 0px 5px 5px;
+	padding-bottom: 4.5vw;
+}
+
+/* The div element that displays the enemies encountered. Positions the element at the bottom of parent element*/
+.Flex4 {
+	position:absolute;
+	text-align: center;
+	top: 25%;
+}
+
+/* The div element that displays the "Have Fun!" message at the bottom of the screen*/
+.Flex5 {
+	position:absolute;
+	text-align: center;
+	bottom: 0;
+}
+
+/* The div element that helps vertically the span element with Enemy names*/
+.middle {
+	display: inline-block;
+}
+
+/* Styling for the span elements that display information like score and level*/
+.info{
+	display: flex;
+	background-color: none;
+	margin: 1vw;
+}
+
+/* The styling for the span element related to the Asteroid Enemy*/
+.info1{
+	display: flex;
+	background-color: none;
+	color: brown;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+}
+/* The styling for the span element related to the Rocks Enemy*/
+.info2{
+	display: flex;
+	background-color: none;
+	color: red;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+}
+
+/* The styling for the span element related to the Rocks Enemy*/
+.info3{
+	display: flex;
+	background-color: none;
+	color: cyan;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+}
+
+/* Styling elements for the Enemy tile in the achievements section*/
+.Enemies {
+    display: flex;
+	background-color: none;
+	justify-content: center;
+	align-items: center;
+    text-align: center;
+	font-size: 2vw;
     font-family: "Comic Sans MS";
     color: black;
 	width: auto;
-	margin: 3% auto;
-	border: none;
-	border-radius: 5px;
-	font-family: "Comic Sans MS";
+	padding-top: 1vw;
 }
-*/
 
+/* Styling for some of the buttons used in the menu system*/
 .Submit3 {
-    display: flex;
+    display: none;
 	justify-content: center;
 	align-items: center;
     color: black;
@@ -164,21 +278,7 @@ input {
 	font-family: "Comic Sans MS";
 }
 
-.button-wrapper {
-	display: none;
-	background-color: white;
-	text-align: center;
-	justify-content: center;
-	align-items: center;
-	vertical-align: center;
-	width: 50vw;
-    height: 15vh;
-	margin: 6% auto;
-	border: none;
-	border-radius: 20px;
-	overflow: hidden;
-}
-
+/* Changes the color of the text in the associated span element*/
 mark.red {
 	color: red;
 	background: none;
@@ -193,16 +293,6 @@ mark.green {
 	color: green;
 	background: none;
 }
-
-h1 {
-	position:relative;
-  }
-  
-  h1 span {
-	position:absolute;
-	text-align: center;
-	bottom:0;
-  }
 
 canvas {
     display: block;

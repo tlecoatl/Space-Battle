@@ -11,13 +11,13 @@
         <meta name="viewport" content="width = device-width, initial-scale = 1">
         <title>My Asteroids Game</title>
         <link rel="stylesheet" href="styles.css">
-        <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-        <script src="/js/classes.js"></script>
-        <script src="/js/functions.js"></script>
-        <script src="/js/game.js"></script>
+        <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
+        <script src="/js/classes.js" defer></script>
+        <script src="/js/functions.js" defer></script>
+        <script src="/js/game.js" defer></script>
     </head>
 
-    <!--July 7th-->
+    <!--July 7th - Houses all of the elements of the game's menu system-->
     <div class="Start">
         <div class="shell">
             <div>
@@ -32,19 +32,39 @@
                         <button class="Submit" name="main" onclick="how()">How To Play</button>
                     </tr>
                     <tr>
-                        <button class="Submit" name="main">Achievements</button>
+                        <button class="Submit" name="main" onclick="record()">Achievements</button>
                     </tr>
                     <tr>
+                        <div class="Flex6" name="instructions">
                         <h1 class="Instructions" name="instructions">
                             Forward: Up arrow or 'W' key<br>
                             Turn left: Left arrow or 'A' key<br>
-                            Turn right: Right arrow or 'D' key<br><br>
-                            <span><mark class="red">Dodge, </mark><mark class="blue">shoot enemies, </mark><mark class="green" >and have fun!</mark>
-                            </span>
+                            Turn right: Right arrow or 'D' key<br>
+                            Shoot: Hold down the Spacebar
                         </h1>
+                        <div class="Flex5">
+                        <span><mark class="red">Dodge, </mark><mark class="blue">shoot enemies, </mark><mark class="green" >and have fun!</mark>
+                        </span>
+                        </div>
+                    </div>
                     </tr>
                     <tr>
                         <button class="Submit2" name="instructions" onclick="home1()">Home</button>
+                    </tr>
+                    <tr>
+                        <div class="Flex1" name="records">
+                            <span class="info" name="hiScore">&nbsp;&nbsp;Hi-Score: 1200&nbsp;&nbsp;</span>
+                            <span class="info" name="hiLevel">Hi: 3</span>
+                        </div>
+                        <div class="Flex3" name="records">
+                            <h1 class="Enemies" name="enemies">Enemies Encountered:
+                            </h1>
+                            <div class="Flex4">
+                                <div class="middle" id="eList"><div>
+                        </div>
+                    </tr>
+                    <tr>
+                        <button class="Submit3" name="records" onclick="home2()">Home</button>
                     </tr>
                     <tr>
                         <form id="nameForm">
