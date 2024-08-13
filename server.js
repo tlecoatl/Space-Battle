@@ -93,19 +93,17 @@ io.on('connection', (socket) => {
 
     // Once a key down event is triggered, this receives the new keys object and updates the ships key object
     socket.on('keydown', (e) => {
-        if (e != undefined & serverPlayers[socket.id] != "undefined"){
-            if (serverPlayers[socket.id] != "undefined"){
-                serverPlayers[socket.id].keys = e;
-            }
+        if (e != undefined & serverPlayers[socket.id] !== null & serverPlayers[socket.id] !== "undefined"
+            & serverPlayers[socket.id].keys !== null & serverPlayers[socket.id].keys !== "undefined"){
+            serverPlayers[socket.id].keys = e;
         }
     })
 
     // Once a key down event is triggered, this receives the new keys object and updates the ships key object
     socket.on('keyup', (e) => {
-        if (e != undefined & serverPlayers[socket.id] != "undefined"){
-            if (serverPlayers[socket.id] != "undefined"){
-                serverPlayers[socket.id].keys = e;
-            }
+        if (e !== undefined & serverPlayers[socket.id] !== null & serverPlayers[socket.id] !== "undefined" 
+            & serverPlayers[socket.id].keys !== null & serverPlayers[socket.id].keys !== "undefined"){
+            serverPlayers[socket.id].keys = e;
         }
     })
 })
@@ -172,6 +170,11 @@ setInterval(() =>{
                                 serverPlayers[mm].lives--;
                                 serverPlayers[mm].vulnerable = false;
                             } else if (pm.lives === 0){
+                                for (let bID in serverBullets) {
+                                    if (serverBullets[bID].player === mm){
+                                        delete serverBullets[bID];
+                                    }
+                                }
                                 delete serverPlayers[mm];
                             }
                     }
@@ -189,17 +192,15 @@ setInterval(() =>{
                 // Upon collision adjusts the dimensions of the rock and
                 // deletes the bullet object
                 if(Collision(am.xpos, am.ypos, am.radius, bm.xpos, bm.ypos, bm.radius)){
-                    let finalBulletz = bm.player;
                     delete serverBullets[idm];
                     am.radius -= 2.5
                     am.length -= 2.5; 
                     // adds 200 to score and deletes rock object after a certain size.
-                    if(serverCrystals[oo].radius == 25 & serverPlayers[finalBulletz] != "undefined"){
-                        if (typeof serverPlayers[finalBulletz].score != "undefined"){
-                            delete serverCrystals[oo];
-                            serverPlayers[finalBulletz].score += 100;
-                            crystalTotal--;
-                        }
+                    if(serverCrystals[oo].radius == 25 & serverPlayers[bm.player] !== null & 
+                        serverPlayers[bm.player] !== "undefined" & typeof serverPlayers[bm.player].score !== "undefined"){
+                        delete serverCrystals[oo];
+                        serverPlayers[bm.player].score += 100;
+                        crystalTotal--;
                     }
                 }
             }
@@ -265,6 +266,11 @@ setInterval(() =>{
                                 serverPlayers[aa].lives--;
                                 serverPlayers[aa].vulnerable = false;
                             } else if (p.lives === 0){
+                                for (let bID2 in serverBullets) {
+                                    if (serverBullets[bID2].player === aa){
+                                        delete serverBullets[bID2];
+                                    }
+                                }
                                 delete serverPlayers[aa];
                             }
                     }
@@ -282,17 +288,16 @@ setInterval(() =>{
                 // Upon collision adjusts the dimensions of the rock and
                 // deletes the bullet object
                 if(Collision(a.xpos, a.ypos, a.radius, b.xpos, b.ypos, b.radius)){
-                    let finalBullet = b.player;
                     delete serverBullets[id];
                     a.radius -= 2.5;
                     a.length -= 2.5; 
                     // adds 200 to score and deletes rock object after a certain size.
-                    if(serverRocks[bb].radius == 20 & serverPlayers[finalBullet] != "undefined"){
-                        if (typeof serverPlayers[finalBullet].score != "undefined"){
-                            delete serverRocks[bb];
-                            serverPlayers[finalBullet].score += 200;
-                            rockTotal--;
-                        }
+                    if(serverRocks[bb].radius == 20 & serverPlayers[b.player] !== null & 
+                        serverPlayers[b.player] !== "undefined" & serverPlayers[b.player].score !== null & 
+                        typeof serverPlayers[b.player].score !== "undefined"){
+                        delete serverRocks[bb];
+                        serverPlayers[b.player].score += 200;
+                        rockTotal--;
                     }
                 }
             }
@@ -340,6 +345,11 @@ setInterval(() =>{
                                 serverPlayers[dd].lives--;
                                 serverPlayers[dd].vulnerable = false;
                             } else if (p.lives === 0){
+                                for (let bID3 in serverBullets) {
+                                    if (serverBullets[bID3].player === dd){
+                                        delete serverBullets[bID3];
+                                    }
+                                }
                                 delete serverPlayers[dd];
                             }
                     }
@@ -351,47 +361,49 @@ setInterval(() =>{
     //I don't know why but writing out serverAsteroids[dd] works but using the const a doesn't.
     //Same thing for bullet. It will bypass the radius restrictions otherwise
     if (Object.keys(serverAsteroids).length > 0 && Object.keys(serverBullets).length > 0) {
-        for (const dd in serverAsteroids){
-            const a = serverAsteroids[dd];
+        for (const dz in serverAsteroids){
+            const a = serverAsteroids[dz];
             for(const id in serverBullets){
                 const bc = serverBullets[id];
                 // Upon collision adjusts the dimensions of the asteroid and
                 // deletes the bullet object
                 if(Collision(a.xpos, a.ypos, a.radius, bc.xpos, bc.ypos, bc.radius)){
-                    let finalBullett = bc.player;
                     delete serverBullets[id];
-                    a.radius -= 5;
+                    serverAsteroids[dz].radius -= 5;
                     // Adds two new asteroid objects after a certain size, 
                     // adds to score, and deletes asteroid object.
-                    if(serverAsteroids[dd].radius == 45 & serverPlayers[finalBullett] != "undefined"){
-                        if (typeof serverPlayers[finalBullett].score != "undefined"){
-                            let finalX = a.xpos;
-                            let finalY = a.ypos;
-                            delete serverAsteroids[dd];
-                            for (let rr = 0; rr < 2; rr++) {
-                                serverAsteroids [asteroidID] = {
-                                    xpos: finalX,
-                                    ypos: finalY,
-                                    // Gives the asteroid a random orientation and speed
-                                    xspeed: Math.cos(Math.random()*Math.PI*2) * 2,
-                                    yspeed: Math.sin(Math.random()*Math.PI*2) * 2,
-                                    width: 35,
-                                    height: 35,
-                                    radius: 35,
-                                    color: "white"
-                                }
+                    if(serverAsteroids[dz] !== null & typeof serverAsteroids[dz] !== "undefined" & typeof serverAsteroids[dz].radius !== "undefined"){
+                        if(serverAsteroids[dz].radius == 45 & serverPlayers[bc.player] !== null & typeof serverPlayers[bc.player] !== "undefined"){
+                            if (serverPlayers[bc.player].score !== null & typeof serverPlayers[bc.player].score !== "undefined"){
+                                let finalX = a.xpos;
+                                let finalY = a.ypos;
+                                delete serverAsteroids[dz];
+                                for (let rr = 0; rr < 2; rr++) {
+                                    serverAsteroids [asteroidID] = {
+                                        xpos: finalX,
+                                        ypos: finalY,
+                                        // Gives the asteroid a random orientation and speed
+                                        xspeed: Math.cos(Math.random()*Math.PI*2) * 2,
+                                        yspeed: Math.sin(Math.random()*Math.PI*2) * 2,
+                                        width: 35,
+                                        height: 35,
+                                        radius: 35,
+                                        color: "white"
+                                    }
 
-                                // Adds score to player that fired the bullet
-                                asteroidID++;
-                                serverPlayers[finalBullett].score += 20;
+                                    // Adds score to player that fired the bullet
+                                    asteroidID++;
+                                    serverPlayers[bc.player].score += 20;
+                                }
                             }
                         }
-                    }
-                    // Adds to score and deletes asteroid
-                    else if (a.radius == 25 & serverPlayers[finalBullett] != "undefined"){
-                        if (typeof serverPlayers[finalBullett].score != "undefined"){
-                            serverPlayers[finalBullett].score += 20;
-                            delete serverAsteroids[dd];
+
+                        // Adds to score and deletes asteroid
+                        else if (a.radius == 25 & serverPlayers[bc.player] !== null & serverPlayers[bc.player] !== "undefined"
+                            & serverPlayers[bc.player].score !== null & typeof serverPlayers[bc.player].score !== "undefined"
+                        ){
+                            serverPlayers[bc.player].score += 20;
+                            delete serverAsteroids[dz];
                         }
                     }
                 }
